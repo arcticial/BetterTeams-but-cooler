@@ -328,5 +328,16 @@ public class SQLTeamStorage extends TeamStorage {
 	@Override
 	public void saveMeta(com.booksaw.betterTeams.team.meta.TeamMeta meta) {
     // meta storage not supported in this version	
+		
+	}
+	
+	@Override
+	public void setAnchor(TeamPlayer player, boolean anchor) {
+    // Anchored players are not supported in this SQL storage implementation.
+	}
+
+	@Override
+	public Map<String, String> getRawMeta() {
+    return new HashMap<>();
 	}
 }
