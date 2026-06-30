@@ -324,4 +324,9 @@ public class SQLTeamStorage extends TeamStorage {
 	public void setClaimedChests(List<String> chests) {
 		// not needed
 	}
+	
+	@Override
+	public void saveMeta(com.booksaw.betterTeams.team.meta.TeamMeta meta) {
+    // meta storage not supported in this version	
+	}
 }
