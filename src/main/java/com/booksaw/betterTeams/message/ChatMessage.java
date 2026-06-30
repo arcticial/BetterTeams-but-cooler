@@ -59,7 +59,7 @@ public class ChatMessage extends StaticComponentHolderMessage {
 		requireNonNull(message, "Team chat message cannot be null.");
 		String syntax = requireNonNull(team.getTeamChatSyntax(teamPlayer), "Team chat syntax could not be found.");
 		
-		Component teamPreMessage = Formatter.absolute().process(StringUtil.setPlaceholders(syntax, (prefix == null ? "" : prefix) + player.getDisplayName()));
+		Component teamPreMessage = Formatter.safe().process(StringUtil.setPlaceholders(syntax, (prefix == null ? "" : prefix) + player.getDisplayName()));
 		Component playerMessage = Formatter.player(player).process(message);
 		Component spyPreMessage = Formatter.absolute().process(MessageManager.getMessage(player, "spy.team", team.getName(), player.getName()));
 		return new ChatMessage(team, teamPlayer, ComponentUtil.setPlaceholders(teamPreMessage, playerMessage, "{1}"), ComponentUtil.setPlaceholders(spyPreMessage, playerMessage, "{2}"));
@@ -76,7 +76,7 @@ public class ChatMessage extends StaticComponentHolderMessage {
 		requireNonNull(message, "Team chat message cannot be null.");
 		String syntax = requireNonNull(team.getAllyChatSyntax(teamPlayer), "Team chat syntax could not be found.");
 
-		Component allyPreMessage = Formatter.absolute().process(StringUtil.setPlaceholders(syntax, team.getDisplayName(), (prefix == null ? "" : prefix) + player.getDisplayName()));
+		Component allyPreMessage = Formatter.safe().process(StringUtil.setPlaceholders(syntax, team.getDisplayName(), (prefix == null ? "" : prefix) + player.getDisplayName()));
 		Component playerMessage = Formatter.player(player).process(message);
 		Component spyPreMessage = Formatter.absolute().process(MessageManager.getMessage(player, "spy.ally", team.getName(), player.getName()));
 		return new ChatMessage(team, teamPlayer, ComponentUtil.setPlaceholders(allyPreMessage, playerMessage, "{2}"), ComponentUtil.setPlaceholders(spyPreMessage, playerMessage, "{2}"));
@@ -93,7 +93,7 @@ public class ChatMessage extends StaticComponentHolderMessage {
 		requireNonNull(message, "Team chat message cannot be null.");
 		requireNonNull(syntax, "Team chat syntax cannot be null.");
 
-		Component teamPreMessage = Formatter.absolute().process(StringUtil.setPlaceholders(syntax, (prefix == null ? "" : prefix) + player.getDisplayName()));
+		Component teamPreMessage = Formatter.safe().process(StringUtil.setPlaceholders(syntax, (prefix == null ? "" : prefix) + player.getDisplayName()));
 		Component playerMessage = Formatter.player(player).process(message);
 		Component spyPreMessage = Formatter.absolute().process(MessageManager.getMessage(player, "spy.team", team.getName(), player.getName()));
 		return new ChatMessage(team, teamPlayer, ComponentUtil.setPlaceholders(teamPreMessage, playerMessage, "{1}"), ComponentUtil.setPlaceholders(spyPreMessage, playerMessage, "{2}"));
