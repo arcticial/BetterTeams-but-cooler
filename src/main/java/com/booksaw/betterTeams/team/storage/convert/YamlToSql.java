@@ -87,8 +87,7 @@ public class YamlToSql extends Converter {
 							+ (teamAnchorExists ? ", " + config.getBoolean("anchor") : ""));
 
 			if (echest != null && !echest.isEmpty()) {
-				database.updateRecordWhere(TableName.TEAM, "echest = \"" + echest + "\"",
-						"teamID LIKE '" + teamName + "'");
+				database.executeStatement("UPDATE " + TableName.TEAM + " SET echest = ? WHERE teamID LIKE '" + teamName + "'", echest);
 			}
 
 			// allies
