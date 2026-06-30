@@ -2,7 +2,6 @@ package com.booksaw.betterTeams.team.storage.team;
 
 import com.booksaw.betterTeams.*;
 import com.booksaw.betterTeams.database.TableName;
-import com.booksaw.betterTeams.team.meta.TeamMeta;
 import com.booksaw.betterTeams.team.storage.storageManager.SQLStorageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
@@ -33,8 +32,7 @@ public class SQLTeamStorage extends TeamStorage {
 
 	@Override
 	protected void setValue(String location, TeamStorageType storageType, Object value) {
-		storageManager.getDatabase().updateRecordWhere(TableName.TEAM, location + " = '" + value.toString() + "'",
-				getCondition());
+		storageManager.getDatabase().updateRecordWhere(TableName.TEAM, location, value, getCondition());
 	}
 
 	@Override
@@ -73,11 +71,8 @@ public class SQLTeamStorage extends TeamStorage {
 				return toReturn;
 			}
 			do {
-
 				toReturn.add(new TeamPlayer(Bukkit.getOfflinePlayer(UUID.fromString(result.getString("playerUUID"))),
-						PlayerRank.getRank((result.getInt("playerRank"))), result.getString("title"),
-						result.getBoolean("anchor")));
-
+						PlayerRank.getRank((result.getInt("playerRank"))), result.getString("title")));
 			} while (result.next());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -88,27 +83,11 @@ public class SQLTeamStorage extends TeamStorage {
 
 	@Override
 	public List<UUID> getAnchoredPlayerList() {
-		List<UUID> toReturn = new ArrayList<>();
-
-		try (PreparedStatement ps = storageManager.getDatabase().selectWhere("*", TableName.PLAYERS, getCondition())) {
-			ResultSet result = ps.executeQuery();
-			if (!result.first()) {
-				return toReturn;
-			}
-			do {
-				if (result.getBoolean("anchor"))
-					toReturn.add(UUID.fromString(result.getString("playerUUID")));
-			} while (result.next());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return toReturn;
+		return new ArrayList<>();
 	}
 
 	@Override
 	public List<String> getBanList() {
-
 		List<String> toReturn = new ArrayList<>();
 
 		try (PreparedStatement ps = storageManager.getDatabase().selectWhere("*", TableName.BANS, getCondition())) {
@@ -117,9 +96,7 @@ public class SQLTeamStorage extends TeamStorage {
 				return toReturn;
 			}
 			do {
-
 				toReturn.add(result.getString("playerUUID"));
-
 			} while (result.next());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -129,7 +106,6 @@ public class SQLTeamStorage extends TeamStorage {
 	}
 
 	private List<String> getTeamList(final TableName table) {
-
 		List<String> toReturn = new ArrayList<>();
 
 		try (PreparedStatement ps = storageManager.getDatabase().selectWhere("*", table,
@@ -144,7 +120,6 @@ public class SQLTeamStorage extends TeamStorage {
 				if (!toReturn.contains(toAdd)) {
 					toReturn.add(toAdd);
 				}
-
 			} while (result.next());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -160,19 +135,16 @@ public class SQLTeamStorage extends TeamStorage {
 
 	@Override
 	public List<String> getAllyRequestList() {
-
 		List<String> toReturn = new ArrayList<>();
 
 		try (PreparedStatement ps = storageManager.getDatabase().selectWhere("*", TableName.ALLYREQUESTS,
 				"receivingTeamID LIKE '" + team.getID() + "'")) {
-
 			ResultSet result = ps.executeQuery();
 			if (!result.first()) {
 				return toReturn;
 			}
 			do {
 				toReturn.add(result.getString("requestingTeamID"));
-
 			} while (result.next());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -183,12 +155,10 @@ public class SQLTeamStorage extends TeamStorage {
 
 	@Override
 	public void getEchestContents(Inventory inventory) {
-
 		String result = storageManager.getDatabase().getResult("echest", TableName.TEAM, getCondition());
 		if (result == null || result.isEmpty()) {
 			return;
 		}
-
 		Utils.deserializeIntoInventory(inventory, result);
 	}
 
@@ -199,26 +169,21 @@ public class SQLTeamStorage extends TeamStorage {
 		serial = serial.replace("\"", "\\\"");
 		serial = "\"" + serial + "\"";
 		invalidateCache();
-		storageManager.getDatabase().executeStatement("UPDATE ? SET echest = ? WHERE ?",
-				TableName.TEAM.toString(), serial, getCondition());
-
+		storageManager.getDatabase().executeStatement(
+				"UPDATE %s SET echest = ? WHERE %s".formatted(TableName.TEAM.toString(), getCondition()), serial);
 	}
 
 	@Override
 	public List<String> getWarps() {
-
 		List<String> toReturn = new ArrayList<>();
 
 		try (PreparedStatement ps = storageManager.getDatabase().selectWhere("*", TableName.WARPS, getCondition())) {
-
 			ResultSet result = ps.executeQuery();
 			if (!result.first()) {
 				return toReturn;
 			}
 			do {
-
 				toReturn.add(result.getString("warpInfo"));
-
 			} while (result.next());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -229,18 +194,15 @@ public class SQLTeamStorage extends TeamStorage {
 
 	@Override
 	public List<String> getClaimedChests() {
-
 		List<String> toReturn = new ArrayList<>();
 
 		try (PreparedStatement ps = storageManager.getDatabase().selectWhere("*", TableName.CHESTCLAIMS, getCondition())) {
-
 			ResultSet result = ps.executeQuery();
 			if (!result.first()) {
 				return toReturn;
 			}
 			do {
 				toReturn.add(result.getString("chestLoc"));
-
 			} while (result.next());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -317,22 +279,14 @@ public class SQLTeamStorage extends TeamStorage {
 
 	private void changeRank(TeamPlayer player) {
 		invalidateCache();
-		storageManager.getDatabase().updateRecordWhere(TableName.PLAYERS, "playerRank = " + player.getRank().value,
+		storageManager.getDatabase().updateRecordWhere(TableName.PLAYERS, "playerRank", player.getRank().value,
 				"playerUUID = '" + player.getPlayer().getUniqueId() + "'");
-
 	}
 
 	@Override
 	public void setTitle(TeamPlayer player) {
 		invalidateCache();
-		storageManager.getDatabase().updateRecordWhere(TableName.PLAYERS, "title = '" + player.getTitle() + "'",
-				"playerUUID = '" + player.getPlayer().getUniqueId() + "'");
-	}
-
-	@Override
-	public void setAnchor(TeamPlayer player, boolean anchor) {
-		invalidateCache();
-		storageManager.getDatabase().updateRecordWhere(TableName.PLAYERS, "anchor = " + anchor,
+		storageManager.getDatabase().updateRecordWhere(TableName.PLAYERS, "title", player.getTitle(),
 				"playerUUID = '" + player.getPlayer().getUniqueId() + "'");
 	}
 
@@ -363,43 +317,11 @@ public class SQLTeamStorage extends TeamStorage {
 
 	@Override
 	public void setWarps(List<String> warps) {
-		// not needed
+		// pov: i just want my 1.20.6
 	}
 
 	@Override
 	public void setClaimedChests(List<String> chests) {
 		// not needed
-	}
-
-	@Override
-	public Map<String, String> getRawMeta() {
-		Map<String, String> rawMeta = new HashMap<>();
-		String condition = "teamID = '" + team.getID().toString() + "'";
-		try (PreparedStatement ps = storageManager.getDatabase().selectWhere("*", TableName.TEAM_META, condition)) {
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				rawMeta.put(rs.getString("metaKey"), rs.getString("metaValue"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return rawMeta;
-	}
-
-	@Override
-	public void saveMeta(TeamMeta meta) {
-		String teamId = team.getID().toString();
-
-		storageManager.getDatabase().deleteRecord(TableName.TEAM_META, "teamID = '" + teamId + "'");
-		Map<String, String> serializedMeta = meta.getSerialized();
-		if (serializedMeta.isEmpty()) {
-			return;
-		}
-
-		for (Map.Entry<String, String> entry : serializedMeta.entrySet()) {
-			String columns = "teamID, metaKey, metaValue";
-			String values = "'" + teamId + "', '" + entry.getKey() + "', '" + entry.getValue().replace("'", "''") + "'";
-			storageManager.getDatabase().insertRecord(TableName.TEAM_META, columns, values);
-		}
 	}
 }
