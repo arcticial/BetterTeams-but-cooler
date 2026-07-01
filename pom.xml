@@ -7,7 +7,7 @@
     <version>4.15.2</version>
     <name>BetterTeams</name>
     <packaging>jar</packaging>
-    <description>Create teams to fight to be the best</description>
+    <description>goon teams to goon</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
