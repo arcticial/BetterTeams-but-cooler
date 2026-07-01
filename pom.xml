@@ -238,6 +238,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
+                    <outputDirectory>${basedir}/server/plugins</outputDirectory>
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
@@ -284,14 +285,6 @@
                         <arg>-Xlint:deprecation</arg>
                         <arg>-Xlint:unchecked</arg>
                     </compilerArgs>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
-                <configuration>
-                    <outputDirectory>${basedir}/server/plugins</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
